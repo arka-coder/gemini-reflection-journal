@@ -1,6 +1,6 @@
 {
-  "name": "Gemini Reflection Journal",
-  "description": "A private, user-authenticated journaling and reflection app powered by Gemini 3.8 Flash and Cloud Firestore with user data isolation.",
+  "name": "Reflection Journal",
+  "description": "An intelligent reflection system that remembers what you write, discovers patterns across time, and helps you understand yourself and your decisions more clearly. Powered by Gemini.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -3,6 +3,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import { GoogleGenAI } from '@google/genai';
 import { createServer as createViteServer } from 'vite';
+import { createAiMirrorRouter } from './server/aiMirror';
 
 dotenv.config();
 
@@ -58,6 +59,7 @@ interface FallbackGenerateParams {
   contents: any;
   systemInstruction?: string;
   temperature?: number;
+  responseMimeType?: string;
 }
 
 async function generateContentWithFallback(params: FallbackGenerateParams): Promise<{ text: string; modelUsed: string }> {
@@ -67,13 +69,19 @@ async function generateContentWithFallback(params: FallbackGenerateParams): Prom
   for (let i = 0; i < MODEL_FALLBACK_LADDER.length; i++) {
     const model = MODEL_FALLBACK_LADDER[i];
     try {
+      const config: any = {
+        systemInstruction: params.systemInstruction,
+        temperature: params.temperature ?? 0.7,
+      };
+
+      if (params.responseMimeType) {
+        config.responseMimeType = params.responseMimeType;
+      }
+
       const response = await ai.models.generateContent({
         model,
         contents: params.contents,
-        config: {
-          systemInstruction: params.systemInstruction,
-          temperature: params.temperature ?? 0.7,
-        },
+        config,
       });
 
       const responseText = response.text || '';
@@ -91,6 +99,24 @@ async function generateContentWithFallback(params: FallbackGenerateParams): Prom
   }
 
   throw new Error(`All Gemini models in the fallback ladder failed. Last error: ${lastError?.message || lastError}`);
+}
+
+/**
+ * Safely parse JSON from LLM output, stripping potential markdown code blocks
+ */
+function safeParseJson<T>(rawText: string, fallback: T): T {
+  try {
+    let clean = rawText.trim();
+    if (clean.startsWith('```json')) {
+      clean = clean.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+    } else if (clean.startsWith('```')) {
+      clean = clean.replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
+    return JSON.parse(clean) as T;
+  } catch (err) {
+    console.warn('Failed to parse Gemini JSON output, applying fallback:', err);
+    return fallback;
+  }
 }
 
 // Health Check API
@@ -200,6 +226,9 @@ Format your responses with clean, readable Markdown (using bold headings, short 
     });
   }
 });
+
+// DIVERGENCE AI Mirror & Decision Intelligence Endpoints
+app.use('/api/gemini', createAiMirrorRouter(generateContentWithFallback, safeParseJson));
 
 async function startServer() {
   // Vite middleware in dev, static files in production

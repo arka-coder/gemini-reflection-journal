@@ -8,6 +8,7 @@ import {
   deleteUserEntry,
   getEntryInteractions,
   saveInteraction,
+  saveUserMemories,
 } from '../lib/firestoreService';
 import {
   Plus,
@@ -47,12 +48,24 @@ const MOODS: { type: MoodType; label: string; icon: any; color: string }[] = [
   { type: 'neutral', label: 'Neutral', icon: Meh, color: 'text-slate-300 bg-white/10 border-white/20' },
 ];
 
-export const Dashboard: React.FC = () => {
+export interface DashboardProps {
+  entries?: JournalEntry[];
+  onEntriesUpdated?: (entries: JournalEntry[]) => void;
+  onNavigateToMirror?: () => void;
+  onNavigateToDecide?: (context?: any) => void;
+}
+
+export const Dashboard: React.FC<DashboardProps> = ({
+  entries: propEntries,
+  onEntriesUpdated,
+  onNavigateToMirror,
+  onNavigateToDecide,
+}) => {
   const { user } = useAuth();
   const userId = user?.uid || '';
 
   // Entries State
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [entries, setEntries] = useState<JournalEntry[]>(propEntries || []);
   const [selectedEntryId, setSelectedEntryId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [entriesLoading, setEntriesLoading] = useState(true);
@@ -92,6 +105,7 @@ export const Dashboard: React.FC = () => {
         const userEntries = await getUserEntries(userId);
         if (isMounted) {
           setEntries(userEntries);
+          if (onEntriesUpdated) onEntriesUpdated(userEntries);
           if (userEntries.length > 0) {
             selectEntry(userEntries[0]);
           } else {
@@ -213,14 +227,34 @@ export const Dashboard: React.FC = () => {
       // Update in-memory entries list
       setEntries((prev) => {
         const index = prev.findIndex((e) => e.id === selectedEntryId);
+        let updatedList: JournalEntry[];
         if (index >= 0) {
-          const updated = [...prev];
-          updated[index] = entryToSave;
-          return updated.sort((a, b) => b.updatedAt - a.updatedAt);
+          updatedList = [...prev];
+          updatedList[index] = entryToSave;
+          updatedList.sort((a, b) => b.updatedAt - a.updatedAt);
         } else {
-          return [entryToSave, ...prev];
+          updatedList = [entryToSave, ...prev];
         }
+        if (onEntriesUpdated) onEntriesUpdated(updatedList);
+        return updatedList;
       });
+
+      // Background Personal Memory Engine extraction
+      if (entryToSave.body && entryToSave.body.trim().length > 25) {
+        fetch('/api/gemini/extract-memories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ entry: entryToSave, existingMemories: [] }),
+        })
+          .then((r) => r.json())
+          .then((data) => {
+            if (data.memories && Array.isArray(data.memories) && data.memories.length > 0) {
+              saveUserMemories(userId, data.memories.map((m: any) => ({ ...m, userId })));
+            }
+          })
+          .catch((err) => console.warn('Background memory extraction notice:', err));
+      }
+
       return entryToSave;
     } catch (error: any) {
       console.error('Firestore save failed:', error);
