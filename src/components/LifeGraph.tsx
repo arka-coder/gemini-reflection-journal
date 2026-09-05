@@ -184,21 +184,21 @@ export const LifeGraph: React.FC<LifeGraphProps> = ({ nodes, edges, onSelectNode
                   </text>
 
                   {/* Node Label & Category Badge positioned cleanly below the circle to eliminate overlay */}
-                  <g transform={`translate(0, ${radius + 13})`} className="pointer-events-none select-none">
+                  <g transform={`translate(0, ${radius + 18})`} className="pointer-events-none select-none">
                     <rect
-                      x={-Math.min(Math.max(node.label.length * 3.6, 36), 72)}
-                      y={-9}
-                      width={Math.min(Math.max(node.label.length * 7.2, 72), 144)}
-                      height={24}
-                      rx={5}
+                      x={-Math.min(Math.max(node.label.length * 3.8, 40), 76)}
+                      y={-10}
+                      width={Math.min(Math.max(node.label.length * 7.6, 80), 152)}
+                      height={26}
+                      rx={6}
                       fill="#090b10"
-                      fillOpacity="0.88"
-                      stroke="rgba(255, 255, 255, 0.12)"
+                      fillOpacity="0.95"
+                      stroke="rgba(255, 255, 255, 0.16)"
                       strokeWidth="1"
                     />
                     {/* Node Label Text */}
                     <text
-                      y="2"
+                      y="1"
                       fill="#f8fafc"
                       fontSize="10"
                       fontWeight={isSelected ? '700' : '600'}

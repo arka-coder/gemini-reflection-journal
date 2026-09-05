@@ -227,7 +227,7 @@ Format your responses with clean, readable Markdown (using bold headings, short 
   }
 });
 
-// DIVERGENCE AI Mirror & Decision Intelligence Endpoints
+// Reflection Journal AI Mirror & Decision Intelligence Endpoints
 app.use('/api/gemini', createAiMirrorRouter(generateContentWithFallback, safeParseJson));
 
 async function startServer() {

@@ -5,6 +5,7 @@ import { LandingPage } from './components/LandingPage';
 import { Dashboard } from './components/Dashboard';
 import { MirrorPage } from './components/MirrorPage';
 import { DecisionWorkspace } from './components/DecisionWorkspace';
+import { FuturePage } from './components/FuturePage';
 import {
   getUserEntries,
   getUserMemories,
@@ -154,6 +155,21 @@ const AuthenticatedWorkspace: React.FC = () => {
             onSaveDecision={handleSaveDecision}
             onDeleteDecision={handleDeleteDecision}
             initialContext={decisionContext}
+          />
+        )}
+
+        {activeTab === 'future' && (
+          <FuturePage
+            userId={userId}
+            decisions={decisions}
+            entries={entries}
+            memories={memories}
+            onSaveDecision={handleSaveDecision}
+            onNavigateToDecide={(ctx) => {
+              if (ctx) setDecisionContext(ctx);
+              setActiveTab('decide');
+            }}
+            onNavigateToJournal={() => setActiveTab('journal')}
           />
         )}
       </main>

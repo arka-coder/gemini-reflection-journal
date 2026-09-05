@@ -98,7 +98,7 @@ export async function getUserMemories(userId: string): Promise<MemoryItem[]> {
   } catch (err) {
     console.warn('Could not fetch memories from Firestore, falling back to local storage:', err);
     try {
-      const local = localStorage.getItem(`divergence_memories_${userId}`);
+      const local = localStorage.getItem(`reflection_journal_memories_${userId}`) || localStorage.getItem(`divergence_memories_${userId}`);
       return local ? JSON.parse(local) : [];
     } catch {
       return [];
@@ -115,7 +115,7 @@ export async function saveUserMemories(userId: string, memories: MemoryItem[]): 
     existing.forEach((m) => map.set(m.id || m.content, m));
     memories.forEach((m) => map.set(m.id || m.content, m));
     const merged = Array.from(map.values());
-    localStorage.setItem(`divergence_memories_${userId}`, JSON.stringify(merged));
+    localStorage.setItem(`reflection_journal_memories_${userId}`, JSON.stringify(merged));
   } catch {
     // ignore local storage error
   }
@@ -152,7 +152,7 @@ export async function getUserDecisions(userId: string): Promise<DecisionItem[]> 
   } catch (err) {
     console.warn('Could not fetch decisions from Firestore, using local fallback:', err);
     try {
-      const local = localStorage.getItem(`divergence_decisions_${userId}`);
+      const local = localStorage.getItem(`reflection_journal_decisions_${userId}`) || localStorage.getItem(`divergence_decisions_${userId}`);
       return local ? JSON.parse(local) : [];
     } catch {
       return [];
@@ -165,7 +165,7 @@ export async function saveUserDecision(decision: DecisionItem): Promise<void> {
   
   // Update local cache
   try {
-    const local = localStorage.getItem(`divergence_decisions_${decision.userId}`);
+    const local = localStorage.getItem(`reflection_journal_decisions_${decision.userId}`) || localStorage.getItem(`divergence_decisions_${decision.userId}`);
     const existing: DecisionItem[] = local ? JSON.parse(local) : [];
     const idx = existing.findIndex((d) => d.id === decision.id);
     if (idx >= 0) {
@@ -173,7 +173,7 @@ export async function saveUserDecision(decision: DecisionItem): Promise<void> {
     } else {
       existing.unshift(decision);
     }
-    localStorage.setItem(`divergence_decisions_${decision.userId}`, JSON.stringify(existing));
+    localStorage.setItem(`reflection_journal_decisions_${decision.userId}`, JSON.stringify(existing));
   } catch {
     // ignore
   }
@@ -190,11 +190,11 @@ export async function saveUserDecision(decision: DecisionItem): Promise<void> {
 export async function deleteUserDecision(userId: string, decisionId: string): Promise<void> {
   if (!userId || !decisionId) return;
   try {
-    const local = localStorage.getItem(`divergence_decisions_${userId}`);
+    const local = localStorage.getItem(`reflection_journal_decisions_${userId}`) || localStorage.getItem(`divergence_decisions_${userId}`);
     if (local) {
       const existing: DecisionItem[] = JSON.parse(local);
       const filtered = existing.filter((d) => d.id !== decisionId);
-      localStorage.setItem(`divergence_decisions_${userId}`, JSON.stringify(filtered));
+      localStorage.setItem(`reflection_journal_decisions_${userId}`, JSON.stringify(filtered));
     }
   } catch {
     // ignore
@@ -215,7 +215,7 @@ export async function deleteUserDecision(userId: string, decisionId: string): Pr
 export async function getCachedMirrorAnalysis(userId: string): Promise<any | null> {
   if (!userId) return null;
   try {
-    const local = localStorage.getItem(`divergence_mirror_cache_${userId}`);
+    const local = localStorage.getItem(`reflection_journal_mirror_cache_${userId}`) || localStorage.getItem(`divergence_mirror_cache_${userId}`);
     if (local) return JSON.parse(local);
   } catch {
     // ignore
@@ -226,7 +226,7 @@ export async function getCachedMirrorAnalysis(userId: string): Promise<any | nul
 export async function saveCachedMirrorAnalysis(userId: string, analysis: any): Promise<void> {
   if (!userId || !analysis) return;
   try {
-    localStorage.setItem(`divergence_mirror_cache_${userId}`, JSON.stringify(analysis));
+    localStorage.setItem(`reflection_journal_mirror_cache_${userId}`, JSON.stringify(analysis));
   } catch {
     // ignore
   }

@@ -21,7 +21,7 @@ export function createAiMirrorRouter(
         return res.status(400).json({ error: 'Entry title or body required for memory extraction.' });
       }
 
-      const systemInstruction = `You are the Personal Memory Extraction Engine for DIVERGENCE.
+      const systemInstruction = `You are the Personal Memory Extraction Engine for Reflection Journal.
 Analyze the user's reflection or journal entry and extract 2-6 discrete, meaningful memory units.
 
 CRITICAL RULES:
@@ -97,14 +97,14 @@ CRITICAL RULES:
           success: true,
           insight: {
             headline: 'Your Reflective Mindspace is Beginning',
-            observation: 'As you record more reflections and decisions, DIVERGENCE will gradually map out your core recurring themes, emotional rhythms, decision patterns, and productive tensions.',
+            observation: 'As you record more reflections and decisions, Reflection Journal will gradually map out your core recurring themes, emotional rhythms, decision patterns, and productive tensions.',
             confidenceScore: 70,
             groundedQuotes: [],
             strengths: [
               {
                 title: 'Proactive Self-Inquiry',
                 description: 'You have begun the process of deliberate contemplation and intentional decision-making.',
-                evidence: 'Initial entry created in DIVERGENCE.',
+                evidence: 'Initial entry created in Reflection Journal.',
               },
             ],
             possibleBlindSpots: [
@@ -138,7 +138,7 @@ CRITICAL RULES:
         });
       }
 
-      const systemInstruction = `You are DIVERGENCE's AI Mirror Synthesis Core.
+      const systemInstruction = `You are Reflection Journal's AI Mirror Synthesis Core.
 Analyze the user's reflection history and memories to reveal profound personal patterns, recurring themes, strengths, constructive blind spots, contradictions/tensions, and an interconnected Life Graph.
 
 CORE RULES:
@@ -264,7 +264,7 @@ Return ONLY a valid JSON object matching:
         return res.status(400).json({ error: 'Question is required.' });
       }
 
-      const systemInstruction = `You are DIVERGENCE's 'Ask Your Past Self' engine.
+      const systemInstruction = `You are Reflection Journal's 'Ask Your Past Self' engine.
 The user is asking a question about their past thoughts, decisions, emotions, or values.
 Answer strictly based on the provided reflection entries and memories.
 
@@ -334,7 +334,7 @@ Output MUST be valid JSON:
       const body = (req.body && typeof req.body === 'object') ? req.body : {};
       const { patterns = [], recentEntries = [], memories = [] } = body;
 
-      const systemInstruction = `You are DIVERGENCE's 'Future Me' Trajectory Engine.
+      const systemInstruction = `You are Reflection Journal's 'Future Me' Trajectory Engine.
 Based on the user's observed patterns and values, extrapolate 2-4 plausible future trajectories.
 
 RULES:
@@ -398,7 +398,7 @@ Return ONLY a JSON array of trajectory objects:
         return res.status(400).json({ error: 'Decision title is required.' });
       }
 
-      const systemInstruction = `You are DIVERGENCE's Decision Intelligence & Future-Path Simulator.
+      const systemInstruction = `You are Reflection Journal's Decision Intelligence & Future-Path Simulator.
 Analyze the user's decision dilemma, connect it to relevant past reflections, generate 2-3 future branching options with timelines, scorecards, and a pre-mortem pressure test.
 
 CRITICAL DIRECTIVES:

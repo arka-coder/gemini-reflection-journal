@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Feather, LogOut, ShieldCheck, User as UserIcon, Brain, GitBranch, Sparkles, Compass } from 'lucide-react';
 import { NavTab } from '../types';
+export type { NavTab };
 
 interface NavbarProps {
   activeTab?: NavTab;

@@ -112,6 +112,26 @@ export const FutureMe: React.FC<FutureMeProps> = ({
         </div>
       )}
 
+      {trajectories.length === 0 && (
+        <div className="rounded-3xl bg-white/[0.02] border border-white/10 p-8 text-center space-y-3">
+          <Compass className="w-8 h-8 text-amber-400 mx-auto" />
+          <h4 className="text-base font-semibold text-white">No Behavioral Trajectories Projected Yet</h4>
+          <p className="text-xs text-slate-400 max-w-md mx-auto">
+            As your journal reflections and patterns accumulate, Gemini extrapolates where your habits and mindset vectors lead over 30 days, 6 months, and 12 months.
+          </p>
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              disabled={isLoading}
+              className="inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/30 text-xs font-semibold cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>Project Behavioral Trajectories</span>
+            </button>
+          )}
+        </div>
+      )}
+
       {selectedTrajectory && (
         <div className="space-y-8">
           {/* 1. VISUAL STEPPING TRAJECTORY TIMELINE */}
